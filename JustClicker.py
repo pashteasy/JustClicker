@@ -9,7 +9,7 @@ window = Tk()
 window.title("JustClicker")
 window.geometry('320x140')
 
-lb1 = Label(window, text = 'Click interval (s):', font=("Arial Bold", 12),)
+lb1 = Label(window, text = 'Click interval (ms):', font=("Arial Bold", 12),)
 lb2 = Label(window, text = 'Hot key start/pause:', font=("Arial Bold", 12))
 lb3 = Label(window, text = 'Exit clicker mode:', font=("Arial Bold", 12))
 lb4 = Label(window, text = 'Space', font=("Arial Bold", 12))
@@ -43,7 +43,7 @@ def main():
             if key.is_pressed('Esc'):
                 break
             if isClicking:  
-                click(t)
+                click(t/1000)
     except ValueError:
         messagebox.showerror('Error', 'Enter a valid Float value')
     

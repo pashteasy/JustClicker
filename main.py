@@ -5,7 +5,6 @@ import random
 from tkinter import *
 from tkinter import messagebox
 import threading
-import winsound
 
 window = Tk()
 window.title("JustClicker")
@@ -31,6 +30,9 @@ random_delay = Checkbutton(window, text='Random delay')
 random_delay.grid(column=2, row=0)
 
 coordinates = []
+
+status_label = Label(window, text='', font=("Arial Bold", 12), fg='green')
+status_label.grid(column=0, row=6, columnspan=3)
 
 
 def click(t):
@@ -72,7 +74,7 @@ def main():
 def save_coordinates():
     x, y = auto.position()
     coordinates.append((x, y))
-    winsound.MessageBeep(winsound.MB_OK)  # Воспроизвести звук клика
+    status_label.config(text=f'Coordinates saved: ({x}, {y})')
 
 
 def start_main_thread():

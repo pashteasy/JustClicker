@@ -36,25 +36,23 @@ status_label.grid(column=0, row=6, columnspan=3)
 
 
 def click(t):
-    while isClicking:
-        for coord in coordinates:
-            if not isClicking:
-                return
-            if random_delay.var.get():
-                delay = t + random.uniform(0, t)
-            else:
-                delay = t
-            auto.moveTo(coord[0], coord[1])
-            auto.click()
-            time.sleep(delay)
+    for coord in coordinates:
+        if not isClicking:
+            return
+        auto.moveTo(coord[0], coord[1])
+        auto.click()
+        if random_delay.var.get():
+            delay = t + random.uniform(0, t)
+        else:
+            delay = t
+        print(delay)
+        time.sleep(delay)
 
 
 def set_clicker():
     global isClicking
     isClicking = not isClicking
     update_button_text()
-    if isClicking:
-        start_click_thread()
 
 
 def update_button_text():

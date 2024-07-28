@@ -44,10 +44,8 @@ def click(t):
         mouse.click(Button.left, 2)
         if random_delay.var.get():
             delay = t + random.uniform(0, t)
-            print(f"Random delay: {delay}")
         else:
             delay = t
-            print(f"Fixed delay: {delay}")
         time.sleep(delay)
 
 

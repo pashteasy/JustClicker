@@ -36,21 +36,25 @@ status_label.grid(column=0, row=6, columnspan=3)
 
 
 def click(t):
-    for coord in coordinates:
-        if not isClicking:
-            return
-        delay = t
-        if random_delay.var.get():  # Проверка состояния random_delay
-            delay += random.uniform(0, t)
-        time.sleep(delay)
-        auto.moveTo(coord[0], coord[1])
-        auto.click()
+    while isClicking:
+        for coord in coordinates:
+            if not isClicking:
+                return
+            if random_delay.var.get():
+                delay = t + random.uniform(0, t)
+            else:
+                delay = t
+            auto.moveTo(coord[0], coord[1])
+            auto.click()
+            time.sleep(delay)
 
 
 def set_clicker():
     global isClicking
     isClicking = not isClicking
     update_button_text()
+    if isClicking:
+        start_click_thread()
 
 
 def update_button_text():
@@ -62,10 +66,10 @@ def update_button_text():
 
 def main():
     try:
-        t = float(txt.get())
+        t = float(txt.get()) / 1000  # Convert to seconds
         while True:
             if isClicking:
-                click(t / 1000)
+                click(t)
             time.sleep(0.01)
     except ValueError:
         messagebox.showerror('Error', 'Enter a valid Float value')
@@ -77,7 +81,7 @@ def save_coordinates():
     status_label.config(text=f'Coordinates saved: ({x}, {y})')
 
 
-def start_main_thread():
+def start_click_thread():
     thread = threading.Thread(target=main)
     thread.daemon = True
     thread.start()
@@ -96,7 +100,5 @@ random_delay.config(variable=random_delay.var)
 
 key.add_hotkey('space', set_clicker)
 key.add_hotkey('tab', save_coordinates)
-
-start_main_thread()  # Запуск основного потока сразу при старте программы
 
 window.mainloop()

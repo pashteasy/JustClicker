@@ -65,14 +65,14 @@ def update_button_text():
 
 
 def main():
-    try:
-        t = float(txt.get()) / 1000  # Convert to seconds
-        while True:
-            if isClicking:
+    while True:
+        if isClicking:
+            try:
+                t = float(txt.get()) / 1000  # Convert to seconds
                 click(t)
-            time.sleep(0.01)
-    except ValueError:
-        messagebox.showerror('Error', 'Enter a valid Float value')
+            except ValueError:
+                messagebox.showerror('Error', 'Enter a valid Float value')
+        time.sleep(0.01)
 
 
 def save_coordinates():
@@ -80,12 +80,10 @@ def save_coordinates():
     coordinates.append((x, y))
     status_label.config(text=f'Coordinates saved: ({x}, {y})')
 
-
 def start_click_thread():
     thread = threading.Thread(target=main)
     thread.daemon = True
     thread.start()
-
 
 btn_reset = Button(window, text='Reset Coordinates', command=lambda: coordinates.clear(), font=("Arial Bold", 12))
 btn_reset.grid(column=0, row=5)
@@ -100,5 +98,7 @@ random_delay.config(variable=random_delay.var)
 
 key.add_hotkey('space', set_clicker)
 key.add_hotkey('tab', save_coordinates)
+
+start_click_thread()  # Запуск основного потока сразу при старте программы
 
 window.mainloop()

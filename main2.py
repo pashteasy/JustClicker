@@ -41,7 +41,7 @@ def click(t):
         if not isClicking:
             return
         mouse.position = (coord[0], coord[1])
-        mouse.click(Button.left, 1)
+        mouse.click(Button.left, 2)
         if random_delay.var.get():
             delay = t + random.uniform(0, t)
             print(f"Random delay: {delay}")

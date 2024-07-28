@@ -45,7 +45,6 @@ def click(t):
             delay = t + random.uniform(0, t)
         else:
             delay = t
-        print(delay)
         time.sleep(delay)
 
 

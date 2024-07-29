@@ -40,6 +40,9 @@ coordinates = []
 status_label = Label(window, text='', font=("Arial Bold", 12), fg='green')
 status_label.grid(column=0, row=6, columnspan=3)
 
+cycle_timer_label = Label(window, text='', font=("Arial Bold", 12), fg='red')
+cycle_timer_label.grid(column=2, row=1, columnspan=3)
+
 
 def click(click_delay, cycle_delay):
     for coord in coordinates:
@@ -50,7 +53,14 @@ def click(click_delay, cycle_delay):
         if random_delay.var.get():
             click_delay += random.uniform(0, click_delay)
         time.sleep(click_delay)
-    time.sleep(cycle_delay)
+
+    for remaining in range(int(cycle_delay), 0, -1):
+        if not isClicking:
+            cycle_timer_label.config(text="")
+            return
+        cycle_timer_label.config(text=remaining)
+        time.sleep(1)
+    cycle_timer_label.config(text='')
 
 
 def set_clicker():

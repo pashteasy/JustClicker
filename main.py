@@ -8,23 +8,29 @@ import threading
 
 window = Tk()
 window.title("JustClicker")
-window.geometry('320x140')
+window.geometry('320x160')
 
 lb_click_delay = Label(window, text='Click interval (ms):', font=("Arial Bold", 12))
+lb_cycle_delay = Label(window, text='Cycle delay (s):', font=("Arial Bold", 12))
 lb_hotkey = Label(window, text='Hot key start/pause:', font=("Arial Bold", 12))
 lb_space = Label(window, text='Space', font=("Arial Bold", 12))
 lb_save = Label(window, text='Save coordinates:', font=("Arial Bold", 12))
 lb_alt = Label(window, text='Tab', font=("Arial Bold", 12))
 
 lb_click_delay.grid(column=0, row=0)
-lb_hotkey.grid(column=0, row=1)
-lb_space.grid(column=1, row=1)
-lb_save.grid(column=0, row=3)
-lb_alt.grid(column=1, row=3)
+lb_cycle_delay.grid(column=0, row=1)
+lb_hotkey.grid(column=0, row=2)
+lb_space.grid(column=1, row=2)
+lb_save.grid(column=0, row=4)
+lb_alt.grid(column=1, row=4)
 
 txt = Entry(window, width=7)
 txt.grid(column=1, row=0)
 txt.insert(0, '1000')  # Устанавливаем значение по умолчанию
+
+txt_cycle_delay = Entry(window, width=7)
+txt_cycle_delay.grid(column=1, row=1)
+txt_cycle_delay.insert(0, '60')  # Устанавливаем значение по умолчанию
 
 random_delay = Checkbutton(window, text='Random delay')
 random_delay.grid(column=2, row=0)
@@ -35,17 +41,16 @@ status_label = Label(window, text='', font=("Arial Bold", 12), fg='green')
 status_label.grid(column=0, row=6, columnspan=3)
 
 
-def click(t):
+def click(click_delay, cycle_delay):
     for coord in coordinates:
         if not isClicking:
             return
         auto.moveTo(coord[0], coord[1])
         auto.click()
         if random_delay.var.get():
-            delay = t + random.uniform(0, t)
-        else:
-            delay = t
-        time.sleep(delay)
+            click_delay += random.uniform(0, click_delay)
+        time.sleep(click_delay)
+    time.sleep(cycle_delay)
 
 
 def set_clicker():
@@ -65,8 +70,9 @@ def main():
     while True:
         if isClicking:
             try:
-                t = float(txt.get()) / 1000  # Convert to seconds
-                click(t)
+                click_delay = float(txt.get()) / 1000  # Convert to seconds
+                cycle_delay = float(txt_cycle_delay.get())
+                click(click_delay, cycle_delay)
             except ValueError:
                 messagebox.showerror('Error', 'Enter a valid Float value')
         time.sleep(0.01)

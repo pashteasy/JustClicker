@@ -5,10 +5,11 @@ import random
 from tkinter import *
 from tkinter import messagebox
 import threading
+import json
 
 window = Tk()
 window.title("JustClicker")
-window.geometry('320x160')
+window.geometry('360x180')
 
 lb_click_delay = Label(window, text='Click interval (ms):', font=("Arial Bold", 12))
 lb_cycle_delay = Label(window, text='Cycle delay (s):', font=("Arial Bold", 12))
@@ -93,18 +94,41 @@ def save_coordinates():
     coordinates.append((x, y))
     status_label.config(text=f'Coordinates saved: ({x}, {y})')
 
+
+def save_coordinates_to_file():
+    with open('coordinates.txt', 'w') as file:
+        json.dump(coordinates, file)
+    status_label.config(text='Coordinates saved to file')
+
+
+def load_coordinates_from_file():
+    global coordinates
+    try:
+        with open('coordinates.txt', 'r') as file:
+            coordinates = json.load(file)
+        status_label.config(text='Coordinates loaded from file')
+    except FileNotFoundError:
+        messagebox.showerror('Error', 'No saved coordinates found')
+
+
 def start_click_thread():
     thread = threading.Thread(target=main)
     thread.daemon = True
     thread.start()
 
-btn_reset = Button(window, text='Reset Coordinates', command=lambda: coordinates.clear(), font=("Arial Bold", 12))
+
+btn_reset = Button(window, text='Reset crds', command=lambda: coordinates.clear(), font=("Arial Bold", 12))
 btn_reset.grid(column=0, row=5)
 
-btn_toggle_clicker = Button(window, text='Start', command=set_clicker, font=("Arial Bold", 12))
-btn_toggle_clicker.grid(column=2, row=5)
+btn_save_file = Button(window, text='Save crds', command=save_coordinates_to_file, font=("Arial Bold", 12))
+btn_save_file.grid(column=1, row=5)
 
-txt.focus()
+btn_load_file = Button(window, text='Load crds', command=load_coordinates_from_file, font=("Arial Bold", 12))
+btn_load_file.grid(column=2, row=5)
+
+btn_toggle_clicker = Button(window, text='Start', command=set_clicker, font=("Arial Bold", 12))
+btn_toggle_clicker.grid(column=2, row=2)
+
 isClicking = False
 random_delay.var = BooleanVar()
 random_delay.config(variable=random_delay.var)

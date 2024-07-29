@@ -42,7 +42,7 @@ def click(t):
             return
         mouse.position = (coord[0], coord[1])
         mouse.press(Button.left)
-        time.sleep(0.01)
+        time.sleep(0.1)
         mouse.release(Button.left)
         if random_delay.var.get():
             delay = t + random.uniform(0, t)

@@ -52,8 +52,10 @@ def click(click_delay, cycle_delay):
         auto.moveTo(coord[0], coord[1])
         auto.click()
         if random_delay.var.get():
-            click_delay += random.uniform(0, click_delay)
-        time.sleep(click_delay)
+            delay = click_delay + random.uniform(0, click_delay)
+        else:
+            delay = click_delay
+        time.sleep(delay)
 
     for remaining in range(int(cycle_delay), 0, -1):
         if not isClicking:

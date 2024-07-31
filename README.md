@@ -26,3 +26,7 @@ Load crds - loads a list of coordinates from a file.
 
 Random delay - sets the delay as t+random(0,t).
 
+Launch:
+pip install -r requirements.txt
+python main.py
+

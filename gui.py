@@ -1,10 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import keyboard as key
 import json
 import threading
 import time
-from pynput.keyboard import Key, Controller
+import keyboard
+from pynput.keyboard import Key
 from pynput.mouse import Button
 
 import clickers
@@ -15,6 +15,7 @@ class KeyClickerGUI:
         self.window = tk.Tk()
         self.window.title("KeyClicker")
         self.window.geometry('320x80')
+        self.clicker.is_clicking = False
 
         self.lb_click_delay = tk.Label(self.window, text='Click interval (ms):', font=("Arial", 12))
         self.lb_hotkey = tk.Label(self.window, text='Hot key start/pause:', font=("Arial", 12))
@@ -38,10 +39,11 @@ class KeyClickerGUI:
         self.random_delay.config(variable=self.random_delay.var)
         self.clicker.random_delay = self.random_delay.var
 
-        key.add_hotkey('space', self.toggle_clicker)
+        keyboard.add_hotkey('space', self.toggle_clicker)
+        keyboard.add_hotkey('tab', self.save_coordinates)
 
     def toggle_clicker(self):
-        self.clicker.toggle_clicking()
+        self.clicker.is_clicking = not self.clicker.is_clicking
         self.update_button_text()
 
     def update_button_text(self):
@@ -50,8 +52,27 @@ class KeyClickerGUI:
         else:
             self.btn_toggle_clicker.config(text='Start')
 
+    def save_coordinates(self):
+        pass  # Этот метод будет переопределен в классе JustClickerGUI
+
     def run(self):
+        self.start_click_thread()
         self.window.mainloop()
+
+    def start_click_thread(self):
+        thread = threading.Thread(target=self.click_loop)
+        thread.daemon = True
+        thread.start()
+
+    def click_loop(self):
+        while True:
+            if self.clicker.is_clicking:
+                try:
+                    t = float(self.txt_click_delay.get()) / 1000
+                    self.clicker.click(t)
+                except ValueError:
+                    messagebox.showerror('Error', 'Enter a valid Float value')
+            time.sleep(0.001)
 
 
 class JustClickerGUI(KeyClickerGUI):
@@ -87,7 +108,22 @@ class JustClickerGUI(KeyClickerGUI):
         self.btn_load_file = tk.Button(self.window, text='Load crds', command=self.load_coordinates_from_file, font=("Arial Bold", 12))
         self.btn_load_file.grid(column=2, row=5)
 
-        key.add_hotkey('tab', self.save_coordinates)
+    def click_loop(self):
+        while True:
+            if self.clicker.is_clicking:
+                try:
+                    t = float(self.txt_click_delay.get()) / 1000
+                    self.clicker.click(t)
+                    for remaining in range(int(self.txt_cycle_delay.get()), 0, -1):
+                        if not self.clicker.is_clicking:
+                            self.cycle_timer_label.config(text="")
+                            break
+                        self.cycle_timer_label.config(text=remaining)
+                        time.sleep(1)
+                    self.cycle_timer_label.config(text='')
+                except ValueError:
+                    messagebox.showerror('Error', 'Enter a valid Float value')
+            time.sleep(0.001)
 
     def save_coordinates(self):
         x, y = self.clicker.add_current_position()
@@ -189,35 +225,10 @@ class ClickerSelection:
         self.window.destroy()
         self.launch_main_gui(clicker, gui)
 
-
     def launch_main_gui(self, clicker, gui):
-        start_click_thread(clicker, gui)
         gui.run()
 
 
-def start_click_thread(clicker, gui):
-    thread = threading.Thread(target=lambda: click_loop(clicker, gui))
-    thread.daemon = True
-    thread.start()
-
-
-def click_loop(clicker, gui):
-    while True:
-        if clicker.is_clicking:
-            try:
-                t = float(gui.txt_click_delay.get()) / 1000
-                clicker.click(t)
-                if gui == JustClickerGUI:
-                    for remaining in range(int(gui.txt_cycle_delay.get()), 0, -1):
-                        if not clicker.is_clicking:
-                            gui.cycle_timer_label.config(text="")
-                            break
-                        gui.cycle_timer_label.config(text=remaining)
-                        time.sleep(1)
-                    gui.cycle_timer_label.config(text='')
-            except ValueError:
-                messagebox.showerror('Error', 'Enter a valid Float value')
-        time.sleep(0.001)
 
 
 

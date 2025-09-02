@@ -72,7 +72,7 @@ class PynputClicker(Clicker):
                 break
             self.mouse.position = (coord[0], coord[1])
             self.mouse.press(button=self.btn_to_press)
-            time.sleep(0.001)
+            time.sleep(0.3)
             self.mouse.release(button=self.btn_to_press)
             delay = click_delay + random.uniform(0, click_delay) if self.random_delay else click_delay
             time.sleep(delay)
